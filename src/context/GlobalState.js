@@ -26,28 +26,57 @@ export const GlobalContext = createContext(initialState);
 //provider
 export const GlobalProvider = (props) => {
   const [movies, setMovies] = useState(initialState.movies);
-
   const [cast, setCast] = useState(initialState.cast);
-  const [username, setUsername] = useState(initialState.username);
-  const [email, setEmail] = useState(initialState.email);
-  const [password, setPassword] = useState(initialState.password);
-  const [token, setToken] = useState(initialState.token);
-  const [profile, setProfile] = useState(initialState.profile);
 
-  const [confirmPassword, setConfirmPassword] = useState(
-    initialState.confirmPassword
-  );
+  //user
+  const [username, setUsername] = useState(() => {
+    const saved = window.localStorage.getItem('user');
+    const parsed = JSON.parse(saved);
+    return parsed.username || initialState.username;
+  });
+  const [email, setEmail] = useState(() => {
+    const saved = window.localStorage.getItem('user');
+    const parsed = JSON.parse(saved);
+    return parsed.email || initialState.email;
+  });
+  const [password, setPassword] = useState(() => {
+    const saved = window.localStorage.getItem('user');
+    const parsed = JSON.parse(saved);
+    return parsed.password || initialState.password;
+  });
+  const [token, setToken] = useState(() => {
+    const saved = window.localStorage.getItem('user');
+    const parsed = JSON.parse(saved);
+    return parsed.token || initialState.token;
+  });
+  const [profile, setProfile] = useState(() => {
+    const saved = window.localStorage.getItem('profile');
+    const parsed = JSON.parse(saved);
+    console.log('parsed profile', parsed);
+    return parsed || initialState.profile;
+  });
 
-  const [loggedIn, setLoggedIn] = useState(initialState.loggedIn);
+  const [confirmPassword, setConfirmPassword] = useState(() => {
+    const saved = window.localStorage.getItem('user');
+    const parsed = JSON.parse(saved);
+    return parsed.confirmPassword || initialState.confirmPassword;
+  });
+
+  const [loggedIn, setLoggedIn] = useState(() => {
+    const saved = window.localStorage.getItem('otherData');
+    const parsed = JSON.parse(saved);
+    return parsed.loggedIn || initialState.loggedIn;
+  });
+
   const [state, dispatch] = useReducer(AppReducer, initialState);
 
   useEffect(() => {
     const userData = { username, email, password, confirmPassword, token };
-    const profileData = { ...profile };
+
     const otherData = { loggedIn };
 
     window.localStorage.setItem('user', JSON.stringify(userData));
-    window.localStorage.setItem('profile', JSON.stringify(profileData));
+    window.localStorage.setItem('profile', JSON.stringify(profile));
     window.localStorage.setItem('otherData', JSON.stringify(otherData));
   }, [confirmPassword, email, loggedIn, password, profile, token, username]);
 
