@@ -32,40 +32,40 @@ export const GlobalProvider = (props) => {
   const [username, setUsername] = useState(() => {
     const saved = window.localStorage.getItem('user');
     const parsed = JSON.parse(saved);
-    return parsed.username || initialState.username;
+    return parsed ? parsed.username : initialState.username;
   });
   const [email, setEmail] = useState(() => {
     const saved = window.localStorage.getItem('user');
     const parsed = JSON.parse(saved);
-    return parsed.email || initialState.email;
+    return parsed ? parsed.email : initialState.email;
   });
   const [password, setPassword] = useState(() => {
     const saved = window.localStorage.getItem('user');
     const parsed = JSON.parse(saved);
-    return parsed.password || initialState.password;
+    return parsed ? parsed.password : initialState.password;
   });
   const [token, setToken] = useState(() => {
     const saved = window.localStorage.getItem('user');
     const parsed = JSON.parse(saved);
-    return parsed.token || initialState.token;
+    return parsed ? parsed.token : initialState.token;
   });
   const [profile, setProfile] = useState(() => {
     const saved = window.localStorage.getItem('profile');
     const parsed = JSON.parse(saved);
     console.log('parsed profile', parsed);
-    return parsed || initialState.profile;
+    return parsed ? parsed : initialState.profile;
   });
 
   const [confirmPassword, setConfirmPassword] = useState(() => {
     const saved = window.localStorage.getItem('user');
     const parsed = JSON.parse(saved);
-    return parsed.confirmPassword || initialState.confirmPassword;
+    return parsed ? parsed.confirmPassword : initialState.confirmPassword;
   });
 
   const [loggedIn, setLoggedIn] = useState(() => {
     const saved = window.localStorage.getItem('otherData');
     const parsed = JSON.parse(saved);
-    return parsed.loggedIn || initialState.loggedIn;
+    return parsed ? parsed.loggedIn : initialState.loggedIn;
   });
 
   const [state, dispatch] = useReducer(AppReducer, initialState);
