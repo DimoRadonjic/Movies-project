@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap');
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: rgb(19, 18, 18, 1.2);
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+.movie {
+  top: 10vh;
+  background-color: rgb(56, 56, 56, 0.5);
+  border-radius: 3px;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  position: relative;
+  margin: 1rem;
+  padding: auto;
+  width: 265px;
+  height: fit-content;
+}
+
+.movie-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: -1.5vh;
+  margin-bottom: 5vh;
+}
+
+.movie img {
+  object-fit: cover;
+  height: 450px;
+  width: 100%;
+}
+
+.movie-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem;
+  height: 65px;
+  overflow: hidden;
+}
+
+.movie-info h3 {
+  margin: 0;
+}
+
+.movie-over {
+  padding: 1rem;
+  background-color: rgb(219, 219, 219);
+  color: black;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 2px;
+  overflow: auto;
+  height: 100%;
+  /* max-height: 100%; */
+  transform: translateY(100%);
+  transition: transform 0.3s ease-in-out;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.movie-over p {
+  margin-bottom: 0.45rem;
+}
+
+.movie:hover .movie-over {
+  transform: translateY(0%);
+}
+
+.add-btn h4 {
+  display: inline;
+  margin: 0.2rem;
+  padding-left: 0.3rem;
+}
+.add-btn {
+  margin-bottom: 0.4rem;
+}
+
+.movie-details-link {
+  font-weight: 'lighter';
+  font-size: 1rem;
+}
