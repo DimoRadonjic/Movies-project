@@ -280,53 +280,7 @@ export default function PrimarySearchAppBar() {
             </Search>
             <Box sx={{ flexGrow: 1 }} />
             <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              {loggedIn === false ? (
-                <>
-                  <Link
-                    to='/register'
-                    style={{
-                      fontFamily: 'inherit',
-                      color: 'white',
-                      textDecoration: 'none',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Button
-                      variant='contained'
-                      style={{
-                        backgroundColor: '#F6C900',
-                        color: 'black',
-                        margin: 'auto',
-                        fontWeight: '600',
-                      }}
-                    >
-                      Register
-                    </Button>
-                  </Link>
-                  {/* <Link
-                    to='/login'
-                    style={{
-                      fontFamily: 'inherit',
-                      color: 'white',
-                      textDecoration: 'none',
-                      margin: 'auto',
-                    }}
-                  >
-                    <Button
-                      variant='contained'
-                      style={{
-                        backgroundColor: '#F6C900',
-                        color: 'black',
-                        margin: 'auto',
-                        marginLeft: '2rem',
-                        fontWeight: '600',
-                      }}
-                    >
-                      Log In
-                    </Button>
-                  </Link> */}
-                </>
-              ) : (
+              {loggedIn === true ? (
                 <>
                   <Link
                     to='/myWatchList'
@@ -382,6 +336,30 @@ export default function PrimarySearchAppBar() {
                   >
                     Log Out
                   </Button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to='/register'
+                    style={{
+                      fontFamily: 'inherit',
+                      color: 'white',
+                      textDecoration: 'none',
+                      margin: 'auto',
+                    }}
+                  >
+                    <Button
+                      variant='contained'
+                      style={{
+                        backgroundColor: '#F6C900',
+                        color: 'black',
+                        margin: 'auto',
+                        fontWeight: '600',
+                      }}
+                    >
+                      Register
+                    </Button>
+                  </Link>
                 </>
               )}
             </Box>

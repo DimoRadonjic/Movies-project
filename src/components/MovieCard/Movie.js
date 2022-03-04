@@ -18,40 +18,40 @@ const Movie = (movie) => {
   const { watchList, loggedIn, token, profile } = useContext(GlobalContext);
   let chosen_movie = movie;
 
-  const addMovie = async (movie) => {
-    console.log('Movie', movie);
-    const saved_movieData = await axios.put(
-      `https://imdb-api.tk//api/profiles/${profile.id}/`,
-      {
-        saved_movies: [
-          {
-            id: movie.id,
-            genre: movie.genre,
-            title: movie.title,
-            description: movie.description,
-            budget: movie.budget,
-            revenue: movie.revenue,
-            runtime: movie.runtime,
-            release_date: movie.release_date,
-            avg_score: movie.avg_score,
-            count_score: movie.count_score,
-            img: movie.img,
-            language: movie.language,
-            company: movie.company,
-            actors: movie.actors,
-          },
-        ],
-      },
-      {
-        headers: {
-          // Overwrite Axios's automatically set Content-Type
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token.access}`,
-        },
-      }
-    );
-    console.log(saved_movieData);
-  };
+  // const addMovie = async (movie) => {
+  //   console.log('Movie', movie);
+  //   const saved_movieData = await axios.put(
+  //     `https://imdb-api.tk//api/profiles/${profile.id}/`,
+  //     {
+  //       saved_movies: [
+  //         {
+  //           id: movie.id,
+  //           genre: movie.genre,
+  //           title: movie.title,
+  //           description: movie.description,
+  //           budget: movie.budget,
+  //           revenue: movie.revenue,
+  //           runtime: movie.runtime,
+  //           release_date: movie.release_date,
+  //           avg_score: movie.avg_score,
+  //           count_score: movie.count_score,
+  //           img: movie.img,
+  //           language: movie.language,
+  //           company: movie.company,
+  //           actors: movie.actors,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       headers: {
+  //         // Overwrite Axios's automatically set Content-Type
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${token.access}`,
+  //       },
+  //     }
+  //   );
+  //   console.log(saved_movieData);
+  // };
 
   const Confirm = () => {
     navigate('/movieDetails', { state: { movie_selected: chosen_movie } });
@@ -95,7 +95,7 @@ const Movie = (movie) => {
                         ) === false
                       ) {
                         addMovieToWatchList(movie);
-                        addMovie(movie);
+                        // addMovie(movie);
                       }
                     }}
                   >
@@ -108,16 +108,7 @@ const Movie = (movie) => {
           ) : (
             <></>
           )}
-          {/* <Link
-            to='/movieDetails'
-            style={{
-              fontFamily: 'inherit',
-              color: 'inherit',
-              textDecoration: 'none',
-              margin: 'auto',
-            }}
-          > */}
-          {/* <h3 className='movie-details-link' onClick={Confirm}> */}
+
           <Button
             variant='text'
             onClick={Confirm}
@@ -130,9 +121,6 @@ const Movie = (movie) => {
           >
             Click to see more information about the movie
           </Button>
-
-          {/* </h3> */}
-          {/* </Link> */}
         </div>
       </div>
     </div>

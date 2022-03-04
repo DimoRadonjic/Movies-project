@@ -16,7 +16,9 @@ const WatchList = () => {
                 return <Movie key={movie.id} {...movie} />;
               })
             ) : (
-              <h1>No movies yet , add to your watchList</h1>
+              <h1 className='no-movies'>
+                No movies yet , add to your watchList
+              </h1>
             )
           }
         </GlobalContext.Consumer>

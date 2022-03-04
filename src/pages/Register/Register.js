@@ -157,8 +157,10 @@ const Register = () => {
               console.log('Axios 2 : ', tokenData);
               setToken(tokenData);
             })
-            .then(() => {
+            .then((profileData) => {
               setLoggedIn(true);
+              setProfile(profileData);
+              console.log('Axios 3 done:', profileData);
               NotificationManager.success(
                 'Login Successful!',
                 'Successful',
@@ -186,6 +188,7 @@ const Register = () => {
               type='text'
               autoComplete='off'
               name='username'
+              defaultValue={username !== '' ? username : ''}
               placeholder='Username'
               required
               onChange={handleChange}
@@ -196,6 +199,7 @@ const Register = () => {
               required
               type='email'
               name='email'
+              defaultValue={email !== '' ? email : ''}
               placeholder='Enter your email'
               autoComplete='off'
               onChange={handleChange}
@@ -205,6 +209,7 @@ const Register = () => {
               type='password'
               name='password'
               placeholder='Password'
+              defaultValue={password !== '' ? password : ''}
               autoComplete='off'
               required
               onChange={handleChange}
@@ -214,6 +219,7 @@ const Register = () => {
               type='password'
               name='confirmPassword'
               placeholder='Confirm Password'
+              defaultValue={confirmPassword !== '' ? confirmPassword : ''}
               autoComplete='off'
               required
               onChange={handleChange}

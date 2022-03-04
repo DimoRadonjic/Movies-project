@@ -17,7 +17,7 @@ const initialState = {
   confirmPassword: '',
   loggedIn: false,
   token: {},
-  id: {},
+  profile: {},
 };
 
 //create context
@@ -32,7 +32,7 @@ export const GlobalProvider = (props) => {
   const [email, setEmail] = useState(initialState.email);
   const [password, setPassword] = useState(initialState.password);
   const [token, setToken] = useState(initialState.token);
-  const [profile, setProfile] = useState(initialState.id);
+  const [profile, setProfile] = useState(initialState.profile);
 
   const [confirmPassword, setConfirmPassword] = useState(
     initialState.confirmPassword
@@ -42,11 +42,31 @@ export const GlobalProvider = (props) => {
   const [state, dispatch] = useReducer(AppReducer, initialState);
 
   useEffect(() => {
+    const userData = { username, email, password, confirmPassword, token };
+    const profileData = { ...profile };
+    const otherData = { loggedIn };
+
+    window.localStorage.setItem('user', JSON.stringify(userData));
+    window.localStorage.setItem('profile', JSON.stringify(profileData));
+    window.localStorage.setItem('otherData', JSON.stringify(otherData));
+  }, [confirmPassword, email, loggedIn, password, profile, token, username]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data } = await axios.get(featured_api);
+      // console.log('Movies ', data);
+      const movieData = data.sort((a, b) => b.avg_score - a.avg_score);
+
+      setMovies(movieData);
+    }
     async function fetchActors() {
       const { data } = await axios.get(`https://imdb-api.tk/api/cast/`);
+      // console.log('Cast ', data);
+
       setCast(data);
     }
     fetchActors();
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -62,22 +82,11 @@ export const GlobalProvider = (props) => {
           },
         }
       );
+
       setProfile(profileData);
     }
     fetchProfile(token);
-  }, [token]);
-
-  useEffect(() => {
-    async function fetchData() {
-      const { data } = await axios.get(featured_api);
-      console.log('Movies ', data);
-      const movieData = data.sort((a, b) => b.avg_score - a.avg_score);
-
-      setMovies(movieData);
-    }
-
-    fetchData();
-  }, []);
+  }, [token, username]);
 
   //actions
   const addMovieToWatchList = (movie) => {
