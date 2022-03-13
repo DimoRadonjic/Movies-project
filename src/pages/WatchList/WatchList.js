@@ -1,18 +1,20 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Movie from '../../components/MovieCard/Movie';
 import { GlobalContext } from '../../context/GlobalState';
 
 import './WatchList.css';
 
 const WatchList = () => {
+  const state = useContext(GlobalContext);
+
   return (
     <>
       <h1 className='watchList'>My WatchList</h1>
       <div className='movie-container'>
         <GlobalContext.Consumer>
-          {({ watchList }) =>
-            watchList && watchList.length > 0 ? (
-              watchList.map((movie) => {
+          {({ savedMovies }) =>
+            savedMovies && savedMovies.length > 0 ? (
+              savedMovies.map((movie) => {
                 return <Movie key={movie.id} {...movie} />;
               })
             ) : (

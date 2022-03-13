@@ -16,7 +16,7 @@ import MoreIcon from '@mui/icons-material/MoreVert';
 import logo from './images/IMDB.png';
 import axios from 'axios';
 import { GlobalContext } from '../../context/GlobalState';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
 
 // const search_api =
@@ -78,10 +78,13 @@ export default function PrimarySearchAppBar() {
     setEmail,
     setPassword,
     setToken,
+    profile,
   } = useContext(GlobalContext);
   let { watchList, loggedIn } = useContext(GlobalContext);
 
-  console.log('LoggedIn', loggedIn);
+  const navigate = useNavigate();
+
+  // console.log('LoggedIn', loggedIn);
 
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -107,6 +110,7 @@ export default function PrimarySearchAppBar() {
 
     return () => {};
   }, [searchTerm, setMovies]);
+
   useEffect(() => {
     async function fetchMovies() {
       const { data } = await axios.get(
@@ -142,6 +146,7 @@ export default function PrimarySearchAppBar() {
     setConfirmPassword('');
     setToken({});
     setLoggedIn(false);
+    navigate('/');
   };
 
   const menuId = 'primary-search-account-menu';
@@ -181,45 +186,88 @@ export default function PrimarySearchAppBar() {
         </MenuItem>
       </Link>
 
-      <Link
-        to='/myWatchList'
-        style={{
-          fontFamily: 'inherit',
-          color: 'inherit',
-          textDecoration: 'none',
-        }}
-      >
-        <MenuItem>
-          <IconButton size='large' color='inherit'>
-            <Badge color='error' badgeContent={watchList.length}>
-              <LocalMoviesIcon />
-            </Badge>
-          </IconButton>
-          <p>Watchlist</p>
-        </MenuItem>
-      </Link>
-
-      <Link
-        to='/login'
-        style={{
-          fontFamily: 'inherit',
-          color: 'inherit',
-          textDecoration: 'none',
-        }}
-      >
-        <MenuItem>
+      {loggedIn === true ? (
+        <>
+          <Link
+            to='/myWatchList'
+            style={{
+              fontFamily: 'inherit',
+              color: 'white',
+              textDecoration: 'none',
+            }}
+          >
+            <IconButton
+              size='large'
+              aria-label='show 17 new notifications'
+              color='inherit'
+            >
+              Watchlist
+              <Badge
+                color='error'
+                badgeContent={
+                  profile.saved_movies ? profile.saved_movies.length : ''
+                }
+                style={{
+                  marginRight: '0.35rem',
+                  marginLeft: '0.25rem',
+                }}
+                overlap='circular'
+              >
+                <LocalMoviesIcon style={{ fontSize: '2.5rem' }} />
+              </Badge>
+            </IconButton>
+          </Link>
           <IconButton
             size='large'
+            edge='end'
             aria-label='account of current user'
-            aria-controls='primary-search-account-menu'
+            aria-controls={menuId}
             aria-haspopup='true'
             color='inherit'
+            style={{ marginRight: '0.2rem' }}
           >
-            <AccountCircle />
+            <AccountCircle style={{ fontSize: '2.5rem' }} />
           </IconButton>
-          <p>Profile</p>
-        </MenuItem>
-      </Link>
+          <Button
+            variant='contained'
+            style={{
+              fontSize: '0.85rem',
+              fontFamily: 'inherit',
+              fontWeight: 'bold',
+              color: 'black',
+              textDecoration: 'none',
+              margin: 'auto',
+              marginLeft: '0.5rem',
+              backgroundColor: '#f6c900',
+            }}
+            onClick={handleClick}
+          >
+            Log Out
+          </Button>
+        </>
+      ) : (
+        <Link
+          to='/register'
+          style={{
+            fontFamily: 'inherit',
+            color: 'white',
+            textDecoration: 'none',
+            margin: 'auto',
+          }}
+        >
+          <Button
+            variant='contained'
+            style={{
+              backgroundColor: '#F6C900',
+              color: 'black',
+              margin: 'auto',
+              fontWeight: '600',
+            }}
+          >
+            Register
+          </Button>
+        </Link>
+      )}
     </Menu>
   );
 
@@ -298,7 +346,11 @@ export default function PrimarySearchAppBar() {
                       Watchlist
                       <Badge
                         color='error'
-                        badgeContent={watchList.length}
+                        badgeContent={
+                          profile.saved_movies
+                            ? profile.saved_movies.length
+                            : ''
+                        }
                         style={{
                           marginRight: '0.35rem',
                           marginLeft: '0.25rem',
@@ -320,6 +372,7 @@ export default function PrimarySearchAppBar() {
                   >
                     <AccountCircle style={{ fontSize: '2.5rem' }} />
                   </IconButton>
+
                   <Button
                     variant='contained'
                     style={{
@@ -358,6 +411,28 @@ export default function PrimarySearchAppBar() {
                       }}
                     >
                       Register
+                    </Button>
+                  </Link>
+                  <Link
+                    to='/login'
+                    style={{
+                      fontFamily: 'inherit',
+                      color: 'white',
+                      textDecoration: 'none',
+                      margin: 'auto',
+                    }}
+                  >
+                    <Button
+                      variant='contained'
+                      style={{
+                        backgroundColor: '#F6C900',
+                        color: 'black',
+                        margin: 'auto',
+                        marginLeft: '1rem',
+                        fontWeight: '600',
+                      }}
+                    >
+                      Log in
                     </Button>
                   </Link>
                 </>

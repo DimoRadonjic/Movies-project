@@ -13,18 +13,34 @@ const MovieDetails = () => {
     state: { movie_selected },
   } = useLocation();
 
+  console.log('movie_selected', movie_selected);
+  console.log('movie_selected avg ', movie_selected.avg_score);
+
   const [rating, setRating] = useState(0);
   const [sum_score, setSum_Score] = useState(0);
   const [comments, setComments] = useState([]);
   const [edit, setEdit] = useState(false);
+  const [avgScore, setAvgScore] = useState(movie_selected.avg_score);
 
   const [newComment, setNewComment] = useState('');
-  const [count, setCount] = useState(0);
+  const [votes, setVotes] = useState(0);
   const { loggedIn, cast, token, profile } = useContext(GlobalContext);
   let movieCast = cast.filter((cast) => cast.movie === movie_selected.id);
 
-  console.log('Movie', movie_selected);
-  console.log('Profile', profile);
+  const [movie, setMovie] = useState(movie_selected);
+
+  useEffect(() => {
+    async function fetchMovie() {
+      const { data: movieData } = await axios.get(
+        `https://imdb-api.tk//api/movies/${movie_selected.id}/`
+      );
+      console.log('Movie REs', movieData);
+      setMovie(movieData);
+      setAvgScore(movieData.avg_score);
+      setVotes(movieData.count_score);
+    }
+    fetchMovie();
+  }, [movie_selected.id]);
 
   useEffect(() => {
     let temp_sum_score = comments
@@ -34,6 +50,9 @@ const MovieDetails = () => {
     setSum_Score(temp_sum_score);
   }, [comments]);
 
+  console.log('Sum score', sum_score);
+  console.log('Votes', votes);
+
   useEffect(() => {
     async function fetchReviews() {
       const { data } = await axios.get(
@@ -41,41 +60,15 @@ const MovieDetails = () => {
       );
       let comments = data;
       setComments(comments);
-      setCount(comments.length);
-      console.log('Data', data);
+      setVotes(comments.length);
     }
     fetchReviews();
-  }, [movie_selected.id]);
-  console.log('Votes', comments.length);
+  }, [movie_selected.id, movie_selected.avg_score]);
 
   useEffect(() => {
-    switch (rating) {
-      case 1:
-        setSum_Score(sum_score + 1);
-
-        break;
-      case 2:
-        setSum_Score(sum_score + 2);
-
-        break;
-      case 3:
-        setSum_Score(sum_score + 3);
-
-        break;
-      case 4:
-        setSum_Score(sum_score + 4);
-
-        break;
-      case 5:
-        setSum_Score(sum_score + 5);
-
-        break;
-
-      default:
-        break;
-    }
-    setCount(count + 1);
-
+    setSum_Score(sum_score + rating);
+    setVotes(votes + 1);
+    setAvgScore(sum_score / votes);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rating]);
 
@@ -84,7 +77,7 @@ const MovieDetails = () => {
     setRating(parseInt(e.target.value));
   };
 
-  console.log('Vote', movie_selected.count_score);
+  console.log('Vote movie count score', movie.count_score);
 
   const handleChangeComment = (e) => {
     e.preventDefault();
@@ -98,11 +91,17 @@ const MovieDetails = () => {
     setNewComment(e.target.value);
   };
 
-  const handleClick = (e) => {
-    axios
-      .post(
-        'https://imdb-api.tk//api/reviews/',
-        { comment: newComment, rate: rating, movie: movie_selected.id },
+  console.log('Avg ', parseFloat((sum_score / votes).toFixed(1)));
+
+  const handleClick = async (e) => {
+    try {
+      const reviewsResp = await axios.post(
+        'https://imdb-api.tk/api/reviews/',
+        JSON.stringify({
+          comment: newComment,
+          rate: rating,
+          movie: movie_selected.id,
+        }),
         {
           headers: {
             // Overwrite Axios's automatically set Content-Type
@@ -110,64 +109,40 @@ const MovieDetails = () => {
             Authorization: `Bearer ${token.access}`,
           },
         }
-      )
-      .then((data) => {
-        console.log('Data', data);
-        axios
-          .post(
-            'https://imdb-api.tk/api/reviews/',
-            {
-              movie: movie_selected.id,
-              comment: newComment,
-              rate: rating,
-            },
-            {
-              headers: {
-                // Overwrite Axios's automatically set Content-Type
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token.access}`,
-              },
-            }
-          )
-          .then(
-            () =>
-              axios.patch(
-                `https://imdb-api.tk/api/movies/${movie_selected.id}`
-              ),
-            {
-              runtime: movie_selected.runtime,
-              avg_score: sum_score / movie_selected.count_score,
-              count_score: count,
-            },
-            {
-              headers: {
-                // Overwrite Axios's automatically set Content-Type
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token.access}`,
-              },
-            }
-          )
-          .then((data) => console.log('Movie update', data));
-      });
+      );
+
+      const movieUpdateRes = await axios.patch(
+        `https://imdb-api.tk/api/movies/${movie_selected.id}/`,
+        JSON.stringify({
+          runtime: movie_selected.runtime,
+          avg_score: avgScore,
+          count_score: votes,
+        }),
+        {
+          headers: {
+            // Overwrite Axios's automatically set Content-Type
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.access}`,
+          },
+        }
+      );
+      setAvgScore(movieUpdateRes.data.avg_score);
+      setVotes(movieUpdateRes.data.count_score);
+
+      console.log('Review api ', reviewsResp);
+      console.log('Movie Update api ', movieUpdateRes);
+    } catch (error) {}
 
     setNewComment('');
     setRating(0);
   };
 
-  const handleEdit = () => {
-    console.log('Comment new', newComment);
-    console.log('Comment', comments);
-    console.log(
-      'Comment id',
-      comments.find((comment) => comment.profile.id === profile.id)
-    );
-
+  const handleEdit = async () => {
     let updateComment = comments.find(
       (comment) => comment.profile.id === profile.id
     );
-
-    axios
-      .patch(
+    try {
+      const editCommentRes = await axios.patch(
         `https://imdb-api.tk/api/reviews/${updateComment.id}/`,
         {
           rate: updateComment.rate,
@@ -181,8 +156,8 @@ const MovieDetails = () => {
             Authorization: `Bearer ${token.access}`,
           },
         }
-      )
-      .then((data) => console.log(data));
+      );
+    } catch (error) {}
   };
 
   return (
@@ -197,25 +172,23 @@ const MovieDetails = () => {
           }}
         >
           <Grid item xs={5} md={4}>
-            <img className='img' src={images_api + movie_selected.id} alt='' />
+            <img className='img' src={images_api + movie.id} alt='' />
           </Grid>
           <Grid item xs={8} md={8}>
             <h3>{movie_selected.title}</h3>
-            <p style={{ marginTop: '2vh' }}>{movie_selected.description}</p>
+            <p style={{ marginTop: '2vh' }}>{movie.description}</p>
             <div style={{ marginTop: '2vh' }}>
-              Release Date: {movie_selected.release_date}
+              Release Date: {movie.release_date}
             </div>
             <div style={{ marginTop: '2vh' }}>
-              Movie Duration: {movie_selected.runtime}
+              Movie Duration: {movie.runtime}
             </div>
 
+            <div style={{ marginTop: '2vh' }}>Genre: {movie.genre.title}</div>
             <div style={{ marginTop: '2vh' }}>
-              Genre: {movie_selected.genre.title}
+              Rating: {Math.round(avgScore)}
             </div>
-            <div style={{ marginTop: '2vh' }}>
-              Rating: {parseFloat((sum_score / count).toFixed(1))}
-            </div>
-            <div style={{ marginTop: '2vh' }}>Votes: {count}</div>
+            <div style={{ marginTop: '2vh' }}>Votes: {votes}</div>
             <div style={{ marginTop: '2vh' }}>
               Cast:
               <ul style={{ listStyle: 'none' }}>

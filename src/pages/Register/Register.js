@@ -6,6 +6,7 @@ import NotificationContainer from 'react-notifications/lib/NotificationContainer
 import './Register.css';
 import axios from 'axios';
 import { Link } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 // const url = 'https://jsonblob.com/api/jsonBlob';
 const validPasswordRegex = new RegExp(
@@ -35,6 +36,8 @@ const Register = () => {
     setProfile,
   } = useContext(GlobalContext);
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     switch (e.target.name) {
       case 'username':
@@ -58,7 +61,7 @@ const Register = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const userData = JSON.stringify({
@@ -137,40 +140,41 @@ const Register = () => {
         passwordClass: 'regular',
         confirmPasswordClass: 'regular',
       });
-      axios
-        .post('https://imdb-api.tk/api/register/', userData, {
-          headers: {
-            // Overwrite Axios's automatically set Content-Type
-            'Content-Type': 'application/json',
-          },
-        })
-        .then((data) => {
-          console.log('Axios 1 done : ', data);
-          axios
-            .post('https://imdb-api.tk/api/token/', userData, {
-              headers: {
-                // Overwrite Axios's automatically set Content-Type
-                'Content-Type': 'application/json',
-              },
-            })
-            .then(({ data: tokenData }) => {
-              console.log('Axios 2 : ', tokenData);
-              setToken(tokenData);
-            })
-            .then((profileData) => {
-              setLoggedIn(true);
-              setProfile(profileData);
-              console.log('Axios 3 done:', profileData);
-              NotificationManager.success(
-                'Login Successful!',
-                'Successful',
-                5000
-              );
-            });
-        })
-        .catch(() =>
-          NotificationManager.error('Data failed to send', 'Unsuccessful', 5000)
+
+      try {
+        await axios.post('https://imdb-api.tk/api/register/', userData, {
+          headers: { 'Content-type': 'application/json' },
+        });
+        const resp = await axios.post(
+          'https://imdb-api.tk/api/token/',
+          userData,
+          {
+            headers: { 'Content-type': 'application/json' },
+          }
         );
+        const tokenData = resp.data;
+        await axios.post(
+          'https://imdb-api.tk/api/profiles/',
+          JSON.stringify({
+            bio: username,
+            location: '',
+            saved_movies: [],
+          }),
+          {
+            headers: {
+              'Content-type': 'application/json',
+              Authorization: `Bearer ${tokenData.access}`,
+            },
+          }
+        );
+        NotificationManager.success('Login Successful!', 'Successful', 5000);
+
+        setToken(tokenData);
+        setLoggedIn(true);
+        navigate('/');
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 

@@ -1,4 +1,5 @@
 export default (state, { type, payload }) => {
+  // console.log('Red state', state);
   switch (type) {
     case 'ADD_MOVIE_TO_WATCHLIST':
       return {

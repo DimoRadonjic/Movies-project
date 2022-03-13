@@ -13,45 +13,62 @@ const images_api = 'https://imdb-api.tk/api/image/movie/';
 
 const Movie = (movie) => {
   const navigate = useNavigate();
-  const { addMovieToWatchList, removeMovieToWatchList } =
-    useContext(GlobalContext);
-  const { watchList, loggedIn, token, profile } = useContext(GlobalContext);
+  const {
+    watchList,
+    loggedIn,
+    profile,
+    token,
+    addMovieToWatchList,
+    removeMovieToWatchList,
+  } = useContext(GlobalContext);
   let chosen_movie = movie;
 
-  // const addMovie = async (movie) => {
-  //   console.log('Movie', movie);
-  //   const saved_movieData = await axios.put(
-  //     `https://imdb-api.tk//api/profiles/${profile.id}/`,
-  //     {
-  //       saved_movies: [
-  //         {
-  //           id: movie.id,
-  //           genre: movie.genre,
-  //           title: movie.title,
-  //           description: movie.description,
-  //           budget: movie.budget,
-  //           revenue: movie.revenue,
-  //           runtime: movie.runtime,
-  //           release_date: movie.release_date,
-  //           avg_score: movie.avg_score,
-  //           count_score: movie.count_score,
-  //           img: movie.img,
-  //           language: movie.language,
-  //           company: movie.company,
-  //           actors: movie.actors,
-  //         },
-  //       ],
-  //     },
-  //     {
-  //       headers: {
-  //         // Overwrite Axios's automatically set Content-Type
-  //         'Content-Type': 'application/json',
-  //         Authorization: `Bearer ${token.access}`,
-  //       },
-  //     }
-  //   );
-  //   console.log(saved_movieData);
-  // };
+  const addMovie = async (movie) => {
+    console.log('Movie added: ', movie.id);
+
+    try {
+      const { data: saved_movieData } = await axios.put(
+        `https://imdb-api.tk/api/profiles/${profile.id}/`,
+        {
+          bio: profile.bio,
+          location: profile.location,
+          saved_movies: [...profile.saved_movies, movie.id],
+        },
+        {
+          headers: {
+            // Overwrite Axios's automatically set Content-Type
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.access}`,
+          },
+        }
+      );
+    } catch (error) {}
+  };
+
+  const removeMovie = async (movie) => {
+    console.log('Movie deleted: ', movie.id);
+
+    try {
+      const { data: saved_movieData } = await axios.put(
+        `https://imdb-api.tk/api/profiles/${profile.id}/`,
+        {
+          bio: profile.bio,
+          location: profile.location,
+          saved_movies: profile.saved_movies.filter(
+            (saved_movie) => saved_movie !== movie.id
+          ),
+        },
+        {
+          headers: {
+            // Overwrite Axios's automatically set Content-Type
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token.access}`,
+          },
+        }
+      );
+      console.log('saved data', saved_movieData);
+    } catch (error) {}
+  };
 
   const Confirm = () => {
     navigate('/movieDetails', { state: { movie_selected: chosen_movie } });
@@ -62,10 +79,10 @@ const Movie = (movie) => {
       <img src={images_api + movie.id} alt={movie.title} />
       <div className='movie-info'>
         <h3>{movie.title}</h3>
-        <span>{movie.avg_score}</span>
+        <span>{Math.round(movie.avg_score)}</span>
         <div className='movie-over'>
           <h2>Overview</h2>
-          <p>{movie.description}</p>
+          <p>{movie.description.trim()}</p>
           {loggedIn ? (
             <div className='add-btn'>
               {window.location.pathname === '/myWatchList' ? (
@@ -76,6 +93,7 @@ const Movie = (movie) => {
                     aria-label='add'
                     onClick={() => {
                       removeMovieToWatchList(movie);
+                      removeMovie(movie);
                     }}
                   >
                     <DeleteIcon />
@@ -90,12 +108,12 @@ const Movie = (movie) => {
                     aria-label='add'
                     onClick={() => {
                       if (
-                        watchList.some(
-                          (watchListMovie) => watchListMovie.id === movie.id
-                        ) === false
+                        watchList.every(
+                          (watchListMovie) => watchListMovie.id !== movie.id
+                        )
                       ) {
                         addMovieToWatchList(movie);
-                        // addMovie(movie);
+                        addMovie(movie);
                       }
                     }}
                   >
