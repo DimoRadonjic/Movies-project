@@ -147,7 +147,7 @@ export const GlobalProvider = (props) => {
         },
       });
       console.log('Data for watchList', data);
-      setWatchList(data);
+      setWatchList(data[0]);
       setSavedMovies(data);
     }
     fetchWatchlist();

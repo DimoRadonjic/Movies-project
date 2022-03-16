@@ -13,16 +13,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import LocalMoviesIcon from '@mui/icons-material/LocalMovies';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import logo from './images/IMDB.png';
+import logo from './images/My project.png';
 import axios from 'axios';
 import { GlobalContext } from '../../context/GlobalState';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@mui/material';
-
-// const search_api =
-//   'https://api.themoviedb.org/3/search/movie?&api_key=e82700f5ac8591784624479f39d63243&query=';
-
-const search_api = 'https://imdb-api.tk/api/movies/?genre_title=&title=B';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -80,7 +75,7 @@ export default function PrimarySearchAppBar() {
     setToken,
     profile,
   } = useContext(GlobalContext);
-  let { watchList, loggedIn } = useContext(GlobalContext);
+  let { loggedIn } = useContext(GlobalContext);
 
   const navigate = useNavigate();
 
@@ -287,15 +282,19 @@ export default function PrimarySearchAppBar() {
               sx={{ display: { xs: 'none', sm: 'block' } }}
               style={{ marginLeft: '10%' }}
             >
-              <div style={{ width: '100%', height: 'auto' }}>
-                <Link to='/'>
+              <div style={{ width: '100%', height: '6rem' }}>
+                <Link
+                  to='/'
+                  style={{
+                    marginRight: '5vw',
+                  }}
+                >
                   <img
                     src={logo}
                     alt=''
                     style={{
                       width: '7rem',
                       marginRight: '2rem',
-                      marginTop: '0.5rem',
                     }}
                   />
                 </Link>
